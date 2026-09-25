@@ -5,14 +5,14 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 interface ProcesoDetalle {
   id: number;
   placa: string;
-  fechaAccidente: string;
-  estado: string;
+  fechaAccidente: string | null;
+  estado: string | null;
   creadoEn: string;
   actualizadoEn: string;
   lugarAccidente: string | null;
   descripcion: string | null;
-  tipoCaso: string;
-  aseguradora: string;
+  tipoCaso: string | null;
+  aseguradora: string | null;
   abogadoAsignado: { id: number; nombre: string } | null;
   creadoPor: { id: number; nombre: string };
 
@@ -29,6 +29,7 @@ interface ProcesoDetalle {
   conductorCedula: string | null;
   conductorTelefono: string | null;
   conductorEmail: string | null;
+  conductorDireccion: string | null;
 }
 
 // Forma de cada elemento de GET /api/v1/procesos/:id/historial.
@@ -49,6 +50,7 @@ interface Tercero {
   email: string | null;
   placa: string | null;
   aseguradora: string | null;
+  conceptoResponsabilidad: string | null;
 }
 
 // Forma de cada elemento de GET /api/v1/procesos/:id/lesionados.
@@ -139,7 +141,8 @@ export function ProcesoDetailPage() {
     proceso.conductorNombre ||
     proceso.conductorCedula ||
     proceso.conductorTelefono ||
-    proceso.conductorEmail;
+    proceso.conductorEmail ||
+    proceso.conductorDireccion;
 
   return (
     <div className="max-w-3xl space-y-6">
@@ -191,6 +194,7 @@ export function ProcesoDetailPage() {
             <Campo etiqueta="Cedula del conductor" valor={proceso.conductorCedula} />
             <Campo etiqueta="Telefono del conductor" valor={proceso.conductorTelefono} />
             <Campo etiqueta="Email del conductor" valor={proceso.conductorEmail} />
+            <Campo etiqueta="Direccion del conductor" valor={proceso.conductorDireccion} />
           </dl>
         </div>
       )}
@@ -230,6 +234,11 @@ export function ProcesoDetailPage() {
                   &middot; Email: {tercero.email ?? '—'} &middot; Placa: {tercero.placa ?? '—'}{' '}
                   &middot; Aseguradora: {tercero.aseguradora ?? '—'}
                 </span>
+                {tercero.conceptoResponsabilidad && (
+                  <span className="mt-1 block text-xs text-gray-500">
+                    Concepto de responsabilidad: {tercero.conceptoResponsabilidad}
+                  </span>
+                )}
               </li>
             ))}
           </ul>

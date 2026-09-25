@@ -5,8 +5,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 interface ProcesoDetalle {
   id: number;
   placa: string;
-  fechaAccidente: string;
-  estado: string;
+  fechaAccidente: string | null;
+  estado: string | null;
   abogadoAsignado: { id: number; nombre: string } | null;
 
   numeroAsistencia: string | null;
@@ -41,7 +41,7 @@ interface Abogado {
   rol: { nombre: string };
 }
 
-const TIPOS_ASISTENCIA = ['IN_SITU', 'TELEFONICA'] as const;
+const TIPOS_ASISTENCIA = ['TELEFONICA', 'IN_SITU', 'PRELIMINAR', 'AUDIENCIA'] as const;
 const RESPONSABILIDADES = ['TERCERO', 'ASEGURADO', 'COMPARTIDA', 'POR_ESTABLECER'] as const;
 const PRECONCEPTOS = ['ACUERDO_EN_SITIO', 'AUDIENCIA', 'DESISTIMIENTO', 'LIBERACION'] as const;
 
@@ -106,8 +106,8 @@ export function ProcesoEditPage() {
         if (!data) return;
         setProceso(data);
         setPlaca(data.placa);
-        setFechaAccidente(data.fechaAccidente);
-        setEstado(data.estado);
+        setFechaAccidente(data.fechaAccidente ?? '');
+        setEstado(data.estado ?? '');
         setAbogadoAsignadoId(data.abogadoAsignado ? String(data.abogadoAsignado.id) : '');
         setNumeroAsistencia(data.numeroAsistencia ?? '');
         setTipoAsistencia(data.tipoAsistencia ?? '');
@@ -144,8 +144,10 @@ export function ProcesoEditPage() {
     const cambios: Record<string, unknown> = {};
 
     if (placa.trim() !== proceso.placa) cambios.placa = placa.trim();
-    if (fechaAccidente !== proceso.fechaAccidente) cambios.fechaAccidente = fechaAccidente;
-    if (estado !== proceso.estado) cambios.estado = estado;
+    if (fechaAccidente && fechaAccidente !== (proceso.fechaAccidente ?? '')) {
+      cambios.fechaAccidente = fechaAccidente;
+    }
+    if (estado && estado !== (proceso.estado ?? '')) cambios.estado = estado;
 
     const abogadoOriginal = proceso.abogadoAsignado ? String(proceso.abogadoAsignado.id) : '';
     if (abogadoAsignadoId && abogadoAsignadoId !== abogadoOriginal) {
@@ -277,7 +279,6 @@ export function ProcesoEditPage() {
                 max={hoy}
                 value={fechaAccidente}
                 onChange={(e) => setFechaAccidente(e.target.value)}
-                required
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
               />
             </div>
@@ -290,9 +291,9 @@ export function ProcesoEditPage() {
                 id="estado"
                 value={estado}
                 onChange={(e) => setEstado(e.target.value)}
-                required
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
               >
+                <option value="">-- Sin estado --</option>
                 {estados.map((e) => (
                   <option key={e.id} value={e.nombre}>
                     {e.nombre}
