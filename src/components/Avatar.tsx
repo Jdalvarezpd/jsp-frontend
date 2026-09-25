@@ -15,7 +15,7 @@ export function Avatar({ nombre, size = 32 }: AvatarProps) {
   return (
     <div
       style={{ width: size, height: size, fontSize: size * 0.4 }}
-      className="flex shrink-0 items-center justify-center rounded-full bg-slate-900 font-semibold text-white"
+      className="flex shrink-0 items-center justify-center rounded-full bg-primary font-semibold text-white"
     >
       {iniciales(nombre)}
     </div>

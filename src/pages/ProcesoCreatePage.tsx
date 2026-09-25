@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BOTON_PRIMARIO } from '../components/Button';
 import { Card } from '../components/Card';
+import { Button } from '@/components/ui/button';
 
 // GET /api/v1/tipos-casos y GET /api/v1/aseguradoras (solo se usan id + nombre).
 interface OpcionCatalogo {
@@ -81,8 +81,6 @@ const hoy = new Date().toISOString().slice(0, 10);
 const etiquetaClases = 'mb-1 block text-sm font-medium text-gray-700';
 const inputClases =
   'w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none';
-const botonSecundarioClases =
-  'rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50';
 
 function hayDatos(valores: object): boolean {
   return Object.values(valores).some((valor) => String(valor).trim() !== '');
@@ -215,10 +213,21 @@ export function ProcesoCreatePage() {
       });
       if (resBuscaVehiculo.status === 401) return sesionExpirada();
 
-      if (resBuscaVehiculo.ok) {
-        vehiculo = await resBuscaVehiculo.json();
+      if (!resBuscaVehiculo.ok) {
+        const dataError = await resBuscaVehiculo.json();
+        return detenerConError(`No se pudo buscar el vehículo: ${textoDeError(dataError)}`);
+      }
+
+      // La busqueda es parcial (contiene) y siempre devuelve un arreglo: buscar
+      // "ABC123" tambien trae "ABC1234". Solo sirve el que tenga exactamente
+      // esa placa (sin distinguir mayusculas, igual que el backend).
+      const coincidencias: Vehiculo[] = await resBuscaVehiculo.json();
+      const existente = coincidencias.find((v) => v.placa.toUpperCase() === placaLimpia.toUpperCase());
+
+      if (existente) {
+        vehiculo = existente;
         guardado.push(`Vehículo ${vehiculo.placa}: ya existía`);
-      } else if (resBuscaVehiculo.status === 404) {
+      } else {
         const resCreaVehiculo = await fetch(`${API}/vehiculos`, {
           method: 'POST',
           headers: headersJson,
@@ -231,9 +240,6 @@ export function ProcesoCreatePage() {
         }
         vehiculo = dataVehiculo;
         guardado.push(`Vehículo ${vehiculo.placa}: creado`);
-      } else {
-        const dataError = await resBuscaVehiculo.json();
-        return detenerConError(`No se pudo buscar el vehículo: ${textoDeError(dataError)}`);
       }
 
       // --- 2. Asegurado (propietario del vehiculo) ---
@@ -493,9 +499,9 @@ export function ProcesoCreatePage() {
           </ul>
 
           {resultado.procesoId ? (
-            <Link to={`/procesos/${resultado.procesoId}`} className={BOTON_PRIMARIO}>
-              Ver proceso
-            </Link>
+            <Button asChild>
+              <Link to={`/procesos/${resultado.procesoId}`}>Ver proceso</Link>
+            </Button>
           ) : (
             <p className="text-gray-600">
               Corrige el problema y vuelve a guardar: lo que ya existe (vehículo, asegurado) se reutiliza.
@@ -825,13 +831,14 @@ export function ProcesoCreatePage() {
           <Card
             titulo="Terceros"
             accion={
-              <button
+              <Button
                 type="button"
+                variant="outline"
+                size="sm"
                 onClick={() => setTerceros([...terceros, terceroVacio])}
-                className={botonSecundarioClases}
               >
                 + Agregar tercero
-              </button>
+              </Button>
             }
           >
             {terceros.length === 0 ? (
@@ -937,13 +944,14 @@ export function ProcesoCreatePage() {
           <Card
             titulo="Lesionados"
             accion={
-              <button
+              <Button
                 type="button"
+                variant="outline"
+                size="sm"
                 onClick={() => setLesionados([...lesionados, lesionadoVacio])}
-                className={botonSecundarioClases}
               >
                 + Agregar lesionado
-              </button>
+              </Button>
             }
           >
             {lesionados.length === 0 ? (
@@ -1006,9 +1014,9 @@ export function ProcesoCreatePage() {
             )}
           </Card>
 
-          <button type="submit" disabled={enviando} className={BOTON_PRIMARIO}>
+          <Button type="submit" disabled={enviando}>
             {enviando ? 'Guardando...' : 'Crear proceso'}
-          </button>
+          </Button>
         </form>
       )}
     </div>

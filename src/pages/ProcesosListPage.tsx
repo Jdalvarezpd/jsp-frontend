@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Badge } from '../components/Badge';
-import { BOTON_PRIMARIO } from '../components/Button';
 import { Card } from '../components/Card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 // Forma de cada proceso que devuelve GET /api/v1/procesos (dentro de `datos`).
 // Solo la placa es obligatoria al crear un proceso, asi que todo lo demas
@@ -38,11 +39,11 @@ const PESTANAS: { valor: Periodo; etiqueta: string }[] = [
 ];
 
 // Mapeo de nombre de estado a color del Badge. Es logica propia de esta
-// vista (Badge.tsx no sabe nada de "estados de proceso"); cualquier estado
-// que no este aqui cae en gris, el color por defecto de Badge.
+// vista (el Badge no sabe nada de "estados de proceso"); cualquier estado
+// que no este aqui cae en gris, el color por defecto del Badge.
 function varianteEstado(estado: string | null): 'green' | 'amber' | 'gray' {
   if (estado === 'Abierto') return 'green';
-  if (estado === 'En curso') return 'amber';
+  if (estado === 'En curso' || estado === 'Falta de documentación') return 'amber';
   return 'gray';
 }
 
@@ -164,37 +165,35 @@ export function ProcesosListPage() {
         titulo="Procesos"
         accion={
           esAdmin ? (
-            <Link to="/procesos/nuevo" className={BOTON_PRIMARIO}>
-              + Nuevo proceso
-            </Link>
+            <Button asChild>
+              <Link to="/procesos/nuevo">+ Nuevo proceso</Link>
+            </Button>
           ) : undefined
         }
       >
-        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-3">
+        <div className="flex items-center justify-between border-b border-border px-6 py-3">
           <div className="flex gap-1">
             {PESTANAS.map((pestana) => (
-              <button
+              <Button
                 key={pestana.valor}
+                variant="ghost"
+                size="sm"
                 onClick={() => setPeriodo(pestana.valor)}
                 className={
                   periodo === pestana.valor
-                    ? 'rounded-md bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-900'
-                    : 'rounded-md px-3 py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                    ? 'bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary'
+                    : 'text-muted-foreground hover:bg-accent/10 hover:text-primary'
                 }
               >
                 {pestana.etiqueta}
-              </button>
+              </Button>
             ))}
           </div>
 
           {periodo !== '' && (
-            <button
-              onClick={handleDescargarExcel}
-              disabled={descargando}
-              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-            >
+            <Button variant="outline" size="sm" onClick={handleDescargarExcel} disabled={descargando}>
               {descargando ? 'Descargando...' : 'Descargar Excel'}
-            </button>
+            </Button>
           )}
         </div>
 
@@ -205,56 +204,53 @@ export function ProcesosListPage() {
         )}
 
         {procesos !== null && procesos.length > 0 && (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-gray-200 text-left text-gray-500">
-                <th className="px-6 py-3 font-medium">Placa</th>
-                <th className="px-6 py-3 font-medium">Aseguradora</th>
-                <th className="px-6 py-3 font-medium">Abogado asignado</th>
-                <th className="px-6 py-3 font-medium">Estado</th>
-                <th className="px-6 py-3 font-medium">Fecha del accidente</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="px-6">Placa</TableHead>
+                <TableHead className="px-6">Aseguradora</TableHead>
+                <TableHead className="px-6">Abogado asignado</TableHead>
+                <TableHead className="px-6">Estado</TableHead>
+                <TableHead className="px-6">Fecha del accidente</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {procesos.map((proceso) => (
-                <tr
-                  key={proceso.id}
-                  className="border-b border-gray-100 last:border-0 hover:bg-gray-50"
-                >
-                  <td className="p-0">
+                <TableRow key={proceso.id}>
+                  <TableCell className="p-0">
                     <Link
                       to={`/procesos/${proceso.id}`}
-                      className="block px-6 py-3 font-medium text-blue-600 hover:underline"
+                      className="block px-6 py-3 font-medium text-accent hover:underline"
                     >
                       {proceso.placa}
                     </Link>
-                  </td>
-                  <td className="p-0">
+                  </TableCell>
+                  <TableCell className="p-0">
                     <Link to={`/procesos/${proceso.id}`} className="block px-6 py-3 text-gray-700">
                       {proceso.aseguradora ?? '—'}
                     </Link>
-                  </td>
-                  <td className="p-0">
+                  </TableCell>
+                  <TableCell className="p-0">
                     <Link to={`/procesos/${proceso.id}`} className="block px-6 py-3 text-gray-700">
                       {proceso.abogadoAsignado ?? '—'}
                     </Link>
-                  </td>
-                  <td className="p-0">
+                  </TableCell>
+                  <TableCell className="p-0">
                     <Link to={`/procesos/${proceso.id}`} className="block px-6 py-3">
                       <Badge variant={varianteEstado(proceso.estado)}>
                         {proceso.estado ?? 'Sin estado'}
                       </Badge>
                     </Link>
-                  </td>
-                  <td className="p-0">
+                  </TableCell>
+                  <TableCell className="p-0">
                     <Link to={`/procesos/${proceso.id}`} className="block px-6 py-3 text-gray-700">
                       {proceso.fechaAccidente ?? '—'}
                     </Link>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         )}
       </Card>
     </div>

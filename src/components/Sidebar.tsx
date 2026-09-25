@@ -1,12 +1,14 @@
 import { NavLink } from 'react-router-dom';
 
+// Colores del menu: fondo azul marino (--primary), texto blanco, y azul medio
+// (--accent) para el item activo y al pasar el mouse.
 const enlaceBase =
-  'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900';
-const enlaceActivo = 'bg-gray-100 text-gray-900';
+  'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-white/75 hover:bg-accent/60 hover:text-white';
+const enlaceActivo = 'bg-accent text-white hover:bg-accent';
 
 // Enlaces todavia sin funcionalidad -- solo visuales por ahora, no navegan a
 // ningun lado. Se muestran atenuados para no confundirlos con los links reales.
-const enlacePlaceholder = 'flex cursor-default items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-400';
+const enlacePlaceholder = 'flex cursor-default items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-white/35';
 
 interface SidebarProps {
   rol: string;
@@ -17,12 +19,12 @@ interface SidebarProps {
 // abogado (403), asi que aqui simplemente no se le ofrece el link.
 export function Sidebar({ rol }: SidebarProps) {
   return (
-    <nav className="flex w-56 shrink-0 flex-col border-r border-gray-200 bg-white">
+    <nav className="flex w-56 shrink-0 flex-col bg-primary text-primary-foreground">
       <div className="flex items-center gap-2 px-4 py-4">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-slate-900 text-xs font-bold text-white">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-white text-xs font-bold text-primary">
           JSP
         </div>
-        <span className="font-semibold text-gray-900">JSP Abogados</span>
+        <span className="font-semibold text-white">JSP Abogados</span>
       </div>
 
       <ul className="space-y-1 px-3 py-2">
@@ -56,7 +58,7 @@ export function Sidebar({ rol }: SidebarProps) {
           </li>
         )}
 
-        <li className="my-2 border-t border-gray-100" />
+        <li className="my-2 border-t border-white/10" />
 
         <li>
           <div className={enlacePlaceholder}>
@@ -65,10 +67,13 @@ export function Sidebar({ rol }: SidebarProps) {
           </div>
         </li>
         <li>
-          <div className={enlacePlaceholder}>
+          <NavLink
+            to="/vehiculos"
+            className={({ isActive }) => `${enlaceBase} ${isActive ? enlaceActivo : ''}`}
+          >
             <IconoVehiculos />
             Vehículos
-          </div>
+          </NavLink>
         </li>
         <li>
           <div className={enlacePlaceholder}>

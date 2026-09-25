@@ -21,7 +21,7 @@ Reglas concretas, no negociables sin discutirlo primero:
 - **Nada de helpers/hooks/factories genéricos** que generen lógica de fetch, formularios o rutas de forma dinámica/parametrizada para evitar escribir código repetido entre vistas.
 - **Nombres de archivo/función/variable siempre en términos del negocio real** (`ProcesosListPage`, `login`), nunca términos genéricos de la abstracción.
 - Repetir estructura similar entre vistas parecidas es preferible a una abstracción compartida — la duplicación aquí es legible, la abstracción prematura no lo es para este equipo (de una sola persona, sin experiencia previa).
-- Estilos: **Tailwind CSS**, utilidades directo en el JSX. Sin archivos `.css` por componente (salvo el mínimo global que requiere Tailwind). No se usa ninguna librería de componentes prearmados (shadcn, Mantine, etc.) — se prefirió mantener control total y explícito sobre el markup.
+- Estilos: **Tailwind CSS**, utilidades directo en el JSX. Sin archivos `.css` por componente (salvo el mínimo global que requiere Tailwind). Se usan componentes estilo **shadcn/ui** (Button, Badge, Table) copiados al repo en `src/components/ui/` — son código propio y editable, no una dependencia oculta. El tema (paleta azul marino: `--primary`, `--accent`) vive en `src/index.css`. Ojo: el CLI `npx shadcn` necesita acceso a `ui.shadcn.com`; si falla por red, los componentes se escriben a mano igual que los generaría el CLI (`components.json` ya está configurado en estilo `new-york`). No se usan otras librerías de componentes (Mantine, MUI, etc.).
 
 ## Stack de este repo
 

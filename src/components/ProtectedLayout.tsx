@@ -60,7 +60,7 @@ export function ProtectedLayout() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar rol={usuario?.rol ?? ''} />
-      <div className="flex-1">
+      <div className="min-w-0 flex-1">
         <header className="flex items-center justify-end border-b border-gray-200 bg-white px-6 py-3">
           <div className="relative">
             <button

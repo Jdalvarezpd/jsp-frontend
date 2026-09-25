@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 interface ProcesoDetalle {
   id: number;
@@ -523,13 +524,9 @@ export function ProcesoEditPage() {
           </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={enviando}
-          className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
-        >
+        <Button type="submit" disabled={enviando}>
           {enviando ? 'Guardando...' : 'Guardar cambios'}
-        </button>
+        </Button>
       </form>
     </div>
   );
