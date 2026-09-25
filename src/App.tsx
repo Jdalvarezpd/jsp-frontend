@@ -7,6 +7,7 @@ import { ProcesoCreatePage } from './pages/ProcesoCreatePage';
 import { ProcesoDetailPage } from './pages/ProcesoDetailPage';
 import { ProcesoEditPage } from './pages/ProcesoEditPage';
 import { ProcesosListPage } from './pages/ProcesosListPage';
+import { VehiculosPage } from './pages/VehiculosPage';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/procesos/:id" element={<ProcesoDetailPage />} />
           <Route path="/procesos/:id/editar" element={<ProcesoEditPage />} />
           <Route path="/abogados" element={<AbogadosListPage />} />
+          <Route path="/vehiculos" element={<VehiculosPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/escritorio" replace />} />
